@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script defer>
+      //Primitive Root Is generated Automatically
+      function isPrime(num) {
+        if (num < 2) return false;
+        for (let i = 2; i <= Math.sqrt(num); i++) {
+          if (num % i === 0) return false;
+        }
+        return true;
+      }
+
+      function generatePrimitiveRoot(p) {
+        for (let g = 2; g < p; g++) {
+          let isPrimitiveRoot = true;
+          for (let i = 1; i < p - 1; i++) {
+            if (g ** i % p === 1) {
+              isPrimitiveRoot = false;
+              break;
+            }
+          }
+          if (isPrimitiveRoot) return g;
+        }
+        return -1;
+      }
+
+      function diffieHellman() {
+        const p = parseInt(document.getElementById('p').value);
+        if (!isPrime(p)) {
+          document.getElementById('result').innerText = 'Number Not Prime';
+          document.getElementById('status').innerText = 'failed'
+          return;
+        }
+
+        const g = generatePrimitiveRoot(p);
+        if (g === -1) {
+          document.getElementById(
+            'result'
+          ).innerText = `Primitive root not found `;
+          document.getElementById('status').innerText = 'failed'
+          return;
+        }
+
+        const Pri1 = parseInt(document.getElementById('alice').value);
+        //Can Be Replace With
+        //const Pri2 =  Math.random() * 100;
+        //To Generate Random number from Bobs Behalf rather than taking from user
+        //Remove the Bob input field To make design consistant
+        const Pri2 = parseInt(document.getElementById('bob').value);
+
+        const tmp1 = g ** Pri1 % p;
+        const tmp2 = g ** Pri2 % p;
+
+        const Sec1 = tmp2 ** Pri1 % p;
+        const Sec2 = tmp1 ** Pri2 % p;
+
+        document.getElementById(
+          'result'
+        ).innerText = `Secret Key For Alice Is ${Sec1}\nSecret Key For Bob Is ${Sec2}\n`;
+
+        if (Sec1 === Sec2) {
+          document.getElementById('status').innerText = 'Successful';
+        } else {
+          document.getElementById('status').innerText = 'failed';
+        }
+      }
+    </script>
+  </head>
+  <body>
+
+    <label for="p">Enter P:</label>
+    <input type="number" id="p" /><br />
+
+    <label for="Pri1">Enter Private Key Of Alice:</label>
+    <input type="number" id="alice" /><br />
+
+    <label for="Pri2">Enter Private Key Of Bob:</label>
+    <input type="number" id="bob" /><br />
+
+    <button onclick="diffieHellman()">Calculate</button>
+
+    <p>Result:</p>
+    <p id="result"></p>
+
+    <p>Key Exchange Status:</p>
+    <p id="status"></p>
+  </body>
+</html>
